@@ -133,7 +133,6 @@ function shutdown {
 }
 
 function boot {
-    IMAGE=$1
     qemu-system-arm \
     -M versatilepb \
     -cpu arm1176 \
