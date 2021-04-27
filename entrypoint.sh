@@ -108,7 +108,7 @@ function prepare_disk {
 
 
 function enable_ssh {
-    guestfish -a "$TARGET_IMAGE" -i <<EOF
+    LIBGUESTFS_BACKEND=direct guestfish -a "$TARGET_IMAGE" -i <<EOF
 mount /dev/sda1 /boot
 touch /boot/ssh
 umount /boot
@@ -153,7 +153,6 @@ function boot {
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || {
   set -e
   trap cleanup EXIT
-
   [ -e "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
   set_versatile_pb_dtb
   set_kernel_4_19_50
