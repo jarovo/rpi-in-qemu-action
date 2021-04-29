@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PROJECT_NAME=rpi-in-qemu-action
+
 # Reference https://github.com/dhruvvyas90/qemu-rpi-kernel/
 
 function set_versatile_pb_dtb {
@@ -51,10 +53,16 @@ function set_raspios_stretch {
   RASPBERRY_DTB_SHA256="aac8f52884fbe568b1cabf5bb66187da7dc1e71c710003436883d1b070d60f5e"
 }
 
-TEST_VM_IMAGE_NAME="test_vm"
+function initial_setup {
+  [ -z "$DEBUG" ] || set -x
+  TEST_VM_IMAGE_NAME="test_vm"
+  CACHE_DIR="$HOME/.cache/$PROJECT_NAME"
+  TMPDIR=`mktemp -d /var/tmp/$PROJECT_NAME-XXXXXXXX`
 
-CACHE_DIR="$HOME/.cache/evok"
-TMPDIR=`mktemp -d /var/tmp/evok-XXXXXXXX`
+  set -e
+  trap cleanup EXIT
+  [ -e "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
+}
 
 function cleanup {
   >&2 echo "Removing $TMPDIR"
@@ -151,9 +159,7 @@ function boot {
 
 # Detect sourcing of this file
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || {
-  set -e
-  trap cleanup EXIT
-  [ -e "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
+  initial_setup
   set_versatile_pb_dtb
   set_kernel_4_19_50
   set_raspios_buster
