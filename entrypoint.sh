@@ -170,7 +170,6 @@ EOF
     -append 'root=/dev/vda2 panic=1' \
     -serial mon:stdio -nographic -no-reboot
 }
-    #-fsdev local,path=/home/jhenner/projects/evok,security_model=passthrough,id=fsdev-fs0,readonly \
 
 # Detect sourcing of this file
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || {
