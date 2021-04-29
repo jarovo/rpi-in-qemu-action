@@ -141,6 +141,21 @@ function shutdown {
 }
 
 function boot {
+    if [ -z "$PASSTHROUGH_SOURCE" ]; then
+      fsdev_options=()
+    else
+      fsdev_options=( -fsdev local,id=passthrough_dev,path=$PASSTHROUGH_SOURCE,security_model=none \
+                      -device virtio-9p-pci,fsdev=passthrough_dev,mount_tag=9p_dev )
+      >&2 cat <<EOF
+#######################################################################
+The passthrough fs device 9p_dev should be available on the guest.
+You should be able to mount the filesystem using following command
+on the guest machine:
+sudo mount -t 9p -o trans=virtio,version=9p2000.L 9p_dev /mnt
+#######################################################################
+EOF
+    fi
+
     qemu-system-arm \
     -M versatilepb \
     -cpu arm1176 \
@@ -149,7 +164,7 @@ function boot {
     -device "virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off" \
     -device virtio-net-pci,netdev=net0 \
     -netdev user,id=net0,hostfwd=tcp::5022-:22 \
-    -fsdev local,id=test_dev,path=/home/jhenner/projects/evok,security_model=none -device virtio-9p-pci,fsdev=test_dev,mount_tag=test_mount \
+    "${fsdev_options[@]}" \
     -dtb "$TMPDIR/$RASPBERRY_DTB_NAME" \
     -kernel "$TMPDIR/$RASPBERRY_KERNEL_NAME" \
     -append 'root=/dev/vda2 panic=1' \
