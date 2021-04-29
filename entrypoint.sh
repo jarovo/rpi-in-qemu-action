@@ -172,7 +172,9 @@ EOF
     -dtb "$TMPDIR/$RASPBERRY_DTB_NAME" \
     -kernel "$TMPDIR/$RASPBERRY_KERNEL_NAME" \
     -append 'root=/dev/vda2 panic=1' \
-    -serial mon:stdio -nographic -no-reboot
+    -nographic -no-reboot -monitor none \
+    -chardev stdio,id=char0,logfile="$TMPDIR/serial.log",signal=off \
+    -serial chardev:char0
 }
 
 # Detect sourcing of this file
@@ -184,6 +186,6 @@ EOF
   download
   prepare_disk
   enable_ssh
-  boot
+  boot &
   wait_for_ssh_active
 }
