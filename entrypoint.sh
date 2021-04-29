@@ -55,11 +55,14 @@ function set_raspios_stretch {
 
 function initial_setup {
   [ -z "$DEBUG" ] || set -x
+  set -e
+
+  SSH_PRIVATE_KEY="$HOME/.ssh/id_rsa"
   TEST_VM_IMAGE_NAME="test_vm"
   CACHE_DIR="$HOME/.cache/$PROJECT_NAME"
   TMPDIR=`mktemp -d /var/tmp/$PROJECT_NAME-XXXXXXXX`
+  ssh_options=( -i "$SSH_PRIVATE_KEY" pi@localhost -p5022 )
 
-  set -e
   trap cleanup EXIT
   [ -e "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
 }
@@ -129,15 +132,16 @@ EOF
 }
 
 function wait_for_ssh_active {
+  [ -r "$SSH_PRIVATE_KEY" ] || ssh-keygen
   >&2 echo 'Waiting for ssh to become active on the guest.'
-  while ! ssh -o ConnectTimeout=1 pi@localhost -p5022 true; do
+  while ! ssh "${ssh_options[@]}" -o ConnectTimeout=1 true; do
     sleep 10
   done
   >&2 echo 'The sshd on the guest is now active.'
 }
 
 function shutdown {
-  ssh pi@localhost -p5022 sudo systemctl poweroff
+  ssh "${ssh_options[@]}" sudo systemctl poweroff
 }
 
 function boot {
