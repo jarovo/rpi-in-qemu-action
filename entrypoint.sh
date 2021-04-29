@@ -63,6 +63,8 @@ function initial_setup {
   TMPDIR=`mktemp -d /var/tmp/$PROJECT_NAME-XXXXXXXX`
   ssh_options=( -i "$SSH_PRIVATE_KEY" pi@localhost -p5022 )
 
+  [ -r "$SSH_PRIVATE_KEY" ] || ssh-keygen -f "$SSH_PRIVATE_KEY"
+
   trap cleanup EXIT
   [ -e "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
 }
@@ -132,7 +134,6 @@ EOF
 }
 
 function wait_for_ssh_active {
-  [ -r "$SSH_PRIVATE_KEY" ] || ssh-keygen
   >&2 echo 'Waiting for ssh to become active on the guest.'
   while ! ssh "${ssh_options[@]}" -o ConnectTimeout=1 true; do
     sleep 10
