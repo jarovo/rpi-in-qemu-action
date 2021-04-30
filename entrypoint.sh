@@ -1,5 +1,11 @@
 #!/bin/bash
+set -x
+>&2 echo entrypoint params: $@
+env
 
+FSDEV_SRC_DIR="${INPUT_FSDEV_SRC_DIR}"
+RPI_9P_DEV_NAME="${INPUT_RPI_9P_DEV_NAME:-rpi_9p_dev}"
+SSH_COMMAND="${INPUT_SSH_COMMAND}"
 PROJECT_NAME=rpi-in-qemu-action
 
 # Reference https://github.com/dhruvvyas90/qemu-rpi-kernel/
@@ -158,17 +164,17 @@ function shutdown {
 
 
 function boot {
-    if [ -z "$PASSTHROUGH_SOURCE" ]; then
+    if [ -z "$FSDEV_SRC_DIR" ]; then
       fsdev_options=()
     else
-      fsdev_options=( -fsdev local,id=passthrough_dev,path=$PASSTHROUGH_SOURCE,security_model=none \
-                      -device virtio-9p-pci,fsdev=passthrough_dev,mount_tag=9p_dev )
+      fsdev_options=( -fsdev local,id=passthrough_dev,path=$FSDEV_SRC_DIR,security_model=none \
+                      -device virtio-9p-pci,fsdev=passthrough_dev,mount_tag="$RPI_9P_DEV_NAME" )
       >&2 cat <<EOF
 #######################################################################
-The passthrough fs device 9p_dev should be available on the guest.
+The passthrough fs device $RPI_9P_DEV_NAME should be available on the guest.
 You should be able to mount the filesystem using following command
 on the guest machine:
-sudo mount -t 9p -o trans=virtio,version=9p2000.L 9p_dev /mnt
+sudo mount -t 9p -o trans=virtio,version=9p2000.L $RPI_9P_DEV_NAME /mnt
 #######################################################################
 EOF
     fi
@@ -202,4 +208,6 @@ EOF
   enable_ssh
   boot &
   wait_for_ssh_active
+  ssh "${ssh_options[@]}" "$SSH_COMMAND"
+  echo "::set-output name=ssh_command_status::$?"
 }
