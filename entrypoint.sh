@@ -60,7 +60,7 @@ function initial_setup {
 
   SSH_HOME_DIR="$HOME/.ssh"
   SSH_PRIVATE_KEY="$SSH_HOME_DIR/id_rsa"
-  ssh_options=( -i "$SSH_PRIVATE_KEY" pi@localhost -p5022 )
+  ssh_options=( -i "$SSH_PRIVATE_KEY" pi@localhost -p5022 -o StrictHostKeyChecking=no)
   if [ ! -r "$SSH_PRIVATE_KEY" ]; then
     mkdir -p "$SSH_HOME_DIR"
     chmod 700 "$SSH_HOME_DIR"
