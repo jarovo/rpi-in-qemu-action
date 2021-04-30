@@ -53,6 +53,7 @@ function set_raspios_stretch {
   RASPBERRY_DTB_SHA256="aac8f52884fbe568b1cabf5bb66187da7dc1e71c710003436883d1b070d60f5e"
 }
 
+
 function initial_setup {
   [ -z "$DEBUG" ] || set -x
   set -e
@@ -74,6 +75,7 @@ function initial_setup {
 
   TEST_VM_IMAGE_NAME="test_vm"
 }
+
 
 function cleanup {
   >&2 echo "Removing $TMPDIR"
@@ -110,6 +112,7 @@ function cached_download {
     cat "$CACHE_DIR/$EXPECTED_SHA_256"
 }
 
+
 function download {
     # From https://blog.agchapman.com/using-qemu-to-emulate-a-raspberry-pi/
     cached_download "$RASPIOS_IMAGE_URL" "$RASPIOS_IMAGE_SHA256" > "$TMPDIR/$RASPIOS_IMAGE_NAME"
@@ -139,6 +142,7 @@ chmod 0644 /home/pi/.ssh/authorized_keys
 EOF
 }
 
+
 function wait_for_ssh_active {
   >&2 echo 'Waiting for ssh to become active on the guest.'
   while ! ssh "${ssh_options[@]}" -o ConnectTimeout=1 true; do
@@ -147,9 +151,11 @@ function wait_for_ssh_active {
   >&2 echo 'The sshd on the guest is now active.'
 }
 
+
 function shutdown {
   ssh "${ssh_options[@]}" sudo systemctl poweroff
 }
+
 
 function boot {
     if [ -z "$PASSTHROUGH_SOURCE" ]; then
@@ -183,6 +189,7 @@ EOF
     -chardev stdio,id=char0,logfile="$TMPDIR/serial.log",signal=off \
     -serial chardev:char0
 }
+
 
 # Detect sourcing of this file
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] || {
