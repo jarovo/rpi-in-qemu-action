@@ -57,16 +57,22 @@ function initial_setup {
   [ -z "$DEBUG" ] || set -x
   set -e
 
-  SSH_PRIVATE_KEY="$HOME/.ssh/id_rsa"
-  TEST_VM_IMAGE_NAME="test_vm"
-  CACHE_DIR="$HOME/.cache/$PROJECT_NAME"
-  TMPDIR=`mktemp -d /var/tmp/$PROJECT_NAME-XXXXXXXX`
+  SSH_HOME_DIR="$HOME/.ssh"
+  SSH_PRIVATE_KEY="$SSH_HOME_DIR/id_rsa"
   ssh_options=( -i "$SSH_PRIVATE_KEY" pi@localhost -p5022 )
+  if [ ! -r "$SSH_PRIVATE_KEY" ]; then
+    mkdir -p "$SSH_HOME_DIR"
+    chmod 700 "$SSH_HOME_DIR"
+    ssh-keygen -f "$SSH_PRIVATE_KEY"
+  fi
 
-  [ -r "$SSH_PRIVATE_KEY" ] || ssh-keygen -f "$SSH_PRIVATE_KEY"
-
-  trap cleanup EXIT
+  CACHE_DIR="$HOME/.cache/$PROJECT_NAME"
   [ -e "$CACHE_DIR" ] || mkdir -p "$CACHE_DIR"
+
+  TMPDIR=`mktemp -d /var/tmp/$PROJECT_NAME-XXXXXXXX`
+  trap cleanup EXIT
+
+  TEST_VM_IMAGE_NAME="test_vm"
 }
 
 function cleanup {
