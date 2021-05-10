@@ -1,7 +1,9 @@
 #!/bin/bash
 set -x
 >&2 echo entrypoint params: $@
-env
+>&2 echo environment
+>&2 env
+
 
 FSDEV_SRC_DIR="${INPUT_FSDEV_SRC_DIR}"
 RPI_9P_DEV_NAME="${INPUT_RPI_9P_DEV_NAME:-rpi_9p_dev}"
