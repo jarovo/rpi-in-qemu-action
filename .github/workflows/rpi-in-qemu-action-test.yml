@@ -10,5 +10,5 @@ jobs:
       - name: Start VM
         uses: jaryn/rpi-in-qemu-action@v1
         with:
-          fsdev_src_dir: .
+          fsdev_src_dir: ${{ github.workspace }}
           ssh_command: mount -t 9p -o trans=virtio,version=9p2000.L rpi_9p_dev /mnt; ls /mnt
