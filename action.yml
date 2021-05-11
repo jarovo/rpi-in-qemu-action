@@ -1,19 +1,22 @@
 # action.yml
 name: 'Raspberry PI in QEMU'
 description: 'Prepares a QEMU-based virtual machine of RPI.'
+
 inputs:
   fsdev_src_dir:
     description: 'A directory that will be passed to the guest machine using fsdev driver.'
     required: true
   fsdev_dev_name:
     description: 'The name of the fsdev device.'
-    required: true
+    required: false
   ssh_command:
-    description: 'A command to execute on the guest machine trough SSH'
+    description: 'A command to execute on the guest machine trough SSH.'
     required: true
+
 outputs:
-  ssh_command_status:
-    description: ''
+  ssh-command-exit-code:
+    description: 'An exit code of the command executed in the VM trough ssh.'
+
 runs:
   using: 'docker'
   image: 'Dockerfile'

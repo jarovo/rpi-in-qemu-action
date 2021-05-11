@@ -212,5 +212,5 @@ EOF
   boot &
   wait_for_ssh_active
   ssh "${ssh_options[@]}" "$SSH_COMMAND"
-  echo "::set-output name=ssh_command_status::$?"
+  echo "::set-output name=ssh-command-exit-code::$?"
 }
