@@ -186,6 +186,7 @@ EOF
     -cpu arm1176 \
     -m 256 \
     -drive "file=$TMPDIR/$TEST_VM_IMAGE_NAME,if=none,index=0,media=disk,format=raw,id=disk0" \
+    -device virtio-rng-pci \
     -device "virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off" \
     -device virtio-net-pci,netdev=net0 \
     -netdev user,id=net0,hostfwd=tcp::5022-:22 \
