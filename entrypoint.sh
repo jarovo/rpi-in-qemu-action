@@ -132,8 +132,9 @@ function download {
 function prepare_disk {
     BASE_IMAGE="$TMPDIR/$RASPIOS_IMAGE_NAME"
     TARGET_IMAGE="$TMPDIR/$TEST_VM_IMAGE_NAME"
-    #qemu-img create -f qcow2 -o backing_file="$RASPIOS_PATH" "$TMPDIR/test_vm.qcow2" 2048M
-    cat "$BASE_IMAGE" | funzip > "$TARGET_IMAGE"
+    EXTRACTED_IMAGE="$TMPDIR/extracted_image"
+    < "$BASE_IMAGE" funzip > "$EXTRACTED_IMAGE"
+    qemu-img create -f qcow2 -o backing_file="$EXTRACTED_IMAGE" "$TARGET_IMAGE" 2048M
 }
 
 
@@ -185,7 +186,7 @@ EOF
     -M versatilepb \
     -cpu arm1176 \
     -m 256 \
-    -drive "file=$TMPDIR/$TEST_VM_IMAGE_NAME,if=none,index=0,media=disk,format=raw,id=disk0" \
+    -drive "file=$TMPDIR/$TEST_VM_IMAGE_NAME,if=none,index=0,media=disk,format=qcow2,id=disk0" \
     -device virtio-rng-pci \
     -device "virtio-blk-pci,drive=disk0,disable-modern=on,disable-legacy=off" \
     -device virtio-net-pci,netdev=net0 \
