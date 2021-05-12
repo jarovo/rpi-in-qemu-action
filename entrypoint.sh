@@ -8,6 +8,7 @@ set -x
 FSDEV_SRC_DIR="${INPUT_FSDEV_SRC_DIR}"
 RPI_9P_DEV_NAME="${INPUT_RPI_9P_DEV_NAME:-rpi_9p_dev}"
 SSH_COMMAND="${INPUT_SSH_COMMAND}"
+MAIN_DISK_SIZE="${INPUT_MAIN_DISK_SIZE:-2G}"
 PROJECT_NAME=rpi-in-qemu-action
 
 # Reference https://github.com/dhruvvyas90/qemu-rpi-kernel/
@@ -134,7 +135,7 @@ function prepare_disk {
     TARGET_IMAGE="$TMPDIR/$TEST_VM_IMAGE_NAME"
     EXTRACTED_IMAGE="$TMPDIR/extracted_image"
     < "$BASE_IMAGE" funzip > "$EXTRACTED_IMAGE"
-    qemu-img create -f qcow2 -o backing_file="$EXTRACTED_IMAGE" "$TARGET_IMAGE" 2048M
+    qemu-img create -f qcow2 -o backing_file="$EXTRACTED_IMAGE" "$TARGET_IMAGE" "$MAIN_DISK_SIZE"
 }
 
 

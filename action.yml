@@ -12,6 +12,10 @@ inputs:
   ssh_command:
     description: 'A command to execute on the guest machine trough SSH.'
     required: true
+  main_disk_size:
+    description: 'The size of the main disk.'
+    default: '2G'
+    required: false
 
 outputs:
   ssh-command-exit-code:

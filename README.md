@@ -20,7 +20,12 @@ jobs:
         id: run-in-vm
         with:
           fsdev_src_dir: ${{ github.workspace }}
-          ssh_command: date; sudo mount -t 9p -o trans=virtio,version=9p2000.L rpi_9p_dev /mnt && ls /mnt && [ -x /mnt/entrypoint.sh ]
+          ssh_command: |
+            date;
+            sudo raspi-config --expand-rootfs \
+              && sudo mount -t 9p -o trans=virtio,version=9p2000.L,msize=33554432 rpi_9p_dev /mnt \
+              && ls /mnt \
+              && [ -x /mnt/entrypoint.sh ]
 
       - name: Check action output.
         if: ${{ steps.run-in-vm.outputs.ssh_command_exit_code != 0 }}
